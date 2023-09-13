@@ -1,5 +1,8 @@
 <template>
   <div class="main-page">
+<!--    <pre>-->
+<!--      {{emSt.list}}-->
+<!--    </pre>-->
     <button
       class="btn btn--outline"
       @click="openEmployeePopup"
@@ -7,7 +10,7 @@
       <img src="/static/icons/add.svg" alt="icon"/>
       <span>Добавить</span>
     </button>
-    <EmployeeTable/>
+    <EmployeeTable ref="table"/>
     <BasePopup
       v-model="employeePopup"
       title="Добавить пользователя"
@@ -16,6 +19,7 @@
       <AddEmployeeForm
         @close="closeEmployeePopup()"
         @alert="showAlert"
+        @update="updateTableData()"
       />
     </BasePopup>
     <BaseAlert
@@ -42,6 +46,56 @@ export default {
   },
   data () {
     return {
+      items: [
+        {
+          id: 1,
+          name: 'Марина',
+          phone: 1116396833,
+          parent: null
+        },
+        {
+          id: 2,
+          name: 'Пётр',
+          phone: 9059720079,
+          parent: null
+        },
+        {
+          id: 3,
+          name: 'Алексей',
+          phone: 4735942684,
+          parent: 2
+        },
+        {
+          id: 4,
+          name: 'Иван',
+          phone: 9009792151,
+          parent: 2
+        },
+        {
+          id: 5,
+          name: 'Борис',
+          phone: 1183291175,
+          parent: 4
+        },
+        {
+          id: 6,
+          name: 'Екатерина',
+          phone: 9075244624,
+          parent: 4
+        },
+        {
+          id: 7,
+          name: 'Валерия',
+          phone: 3343658860,
+          parent: null
+        },
+        {
+          id: 8,
+          name: 'Тест',
+          phone: 3343658860,
+          parent: 5
+        }
+      ],
       employeePopup: false,
       alert: false,
       alertData: {
@@ -73,6 +127,14 @@ export default {
         message: null,
         type: null
       }
+    },
+    updateTableData () {
+      this.$refs.table.getNestedList()
+    }
+  },
+  created () {
+    if (!localStorage.getItem('employee')) {
+      localStorage.setItem('employee', JSON.stringify(this.items))
     }
   }
 }

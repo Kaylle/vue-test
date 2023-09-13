@@ -17,7 +17,7 @@
       </div>
     </div>
     <TreeItem
-      v-for="(child, i) in employees"
+      v-for="(child, i) in tableData"
       :key="i"
       :sort-column="sortColumn"
       :sort-order-asc="sortOrderAsc"
@@ -27,7 +27,6 @@
 </template>
 
 <script>
-import {useEmployeesStore} from '../stores/employees'
 import TreeItem from './treeItem.vue'
 
 export default {
@@ -35,13 +34,9 @@ export default {
   components: {
     TreeItem
   },
-  computed: {
-    employees () {
-      return useEmployeesStore().getNestedList()
-    }
-  },
   data () {
     return {
+      tableData: null,
       sortColumn: 'name',
       sortOrderAsc: true,
       columns: [
@@ -60,7 +55,28 @@ export default {
     sort (columnName) {
       this.sortColumn = columnName
       this.sortOrderAsc = !this.sortOrderAsc
+    },
+    getNestedList () {
+      const data = localStorage.getItem('employee')
+      const array = JSON.parse(data)
+      const cache = new Map()
+      const getChildrenArray = (key) => cache.get(key) || cache.set(key, []).get(key)
+      const maker = (item, getChildrenFor) => {
+        return {
+          ...item,
+          children: getChildrenFor(item.id)
+        }
+      }
+      for (let item of array) {
+        getChildrenArray(item.parent).push(
+          maker(item, getChildrenArray)
+        )
+      }
+      this.tableData = cache.get(null)
     }
+  },
+  created () {
+    this.getNestedList()
   }
 }
 </script>

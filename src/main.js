@@ -1,9 +1,5 @@
 import Vue from 'vue'
 import App from './App'
-import { createPinia, PiniaVuePlugin } from 'pinia'
-
-Vue.use(PiniaVuePlugin)
-const pinia = createPinia()
 
 Vue.config.productionTip = false
 
@@ -71,6 +67,5 @@ Vue.directive('mask', {
 new Vue({
   el: '#app',
   components: { App },
-  template: '<App/>',
-  pinia
+  template: '<App/>'
 })

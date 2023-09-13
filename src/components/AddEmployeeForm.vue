@@ -29,7 +29,7 @@
           Выберите начальника (необязательно)
         </option>
         <option
-          v-for="(employee,i) in employees"
+          v-for="(employee,i) in employeeOptions"
           :key="i"
           :label="employee.name"
           :value="employee.id"
@@ -46,22 +46,18 @@
 </template>
 
 <script>
-import {useEmployeesStore} from '../stores/employees'
-
 export default {
   name: 'AddEmployeeForm',
   computed: {
-    employees () {
-      return useEmployeesStore().getEmployees()
-    },
     id () {
       // emulation of autoIncrement
-      return useEmployeesStore().getEmployees().length + 1
+      return this.employeeOptions.length + 1
     }
   },
   data () {
     return {
       set: [],
+      employeeOptions: JSON.parse(localStorage.getItem('employee')),
       formData: {
         id: null,
         name: null,
@@ -79,7 +75,9 @@ export default {
       if (!this.validateForm()) return
       this.formData.id = this.id
       this.formData.phone = this.$refs.input.clean
-      useEmployeesStore().addEmployee(this.formData)
+      this.employeeOptions.push(this.formData)
+      localStorage.setItem('employee', JSON.stringify(this.employeeOptions))
+      this.$emit('update')
       this.alertSuccess('Сотрудник успешно добавлен!')
       this.clearFormData()
       this.closePopup()
@@ -91,7 +89,6 @@ export default {
       if (!this.formData.phone) {
         return this.alertError('Заполните поле "Телефон"')
       }
-      console.log(this.$refs.input.clean)
       if (this.$refs.input.clean.length !== 11) {
         return this.alertError('В номере телефона должно быть 11 цифр')
       }
